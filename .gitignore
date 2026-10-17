@@ -19,3 +19,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# planning notes for Claude (kept local)
+Agent_docs/
