@@ -21,7 +21,7 @@ Thumbs.db
 !.vscode/extensions.json
 
 # planning notes (kept local)
-Agent_docs/
+docs/
 
 # Claude / agent files (kept local)
 CLAUDE.md
