@@ -1,0 +1,22 @@
+---
+// On Cloudflare, worker/index.js redirects "/" before this page is ever served.
+// This is the fallback for local development: pick the language in the browser.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alex Malo</title>
+    <meta name="robots" content="noindex" />
+    <script is:inline>
+      const ca = (navigator.languages || [navigator.language]).some((l) => l.toLowerCase().startsWith('ca'));
+      location.replace(ca ? '/ca/' : '/en/');
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=/en/" /></noscript>
+  </head>
+  <body>
+    <p><a href="/en/">English</a> · <a href="/ca/">Català</a></p>
+  </body>
+</html>

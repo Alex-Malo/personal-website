@@ -1,0 +1,14 @@
+// Cloudflare Workers config: serves the built site from ./dist.
+// The small Worker in worker/index.js only runs for "/" to pick the language.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "personal-website",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/"]
+  }
+}

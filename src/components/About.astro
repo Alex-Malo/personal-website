@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import { text, links, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = text[lang];
+---
+
+<Base lang={lang} title={t.title} description={t.description}>
+  <section class="intro">
+    <h1>{t.title}</h1>
+    <p class="tagline">{t.tagline}</p>
+  </section>
+
+  <section>
+    <h2>{t.aboutHeading}</h2>
+    {t.about.map((p) => <p>{p}</p>)}
+  </section>
+
+  <section>
+    <h2>{t.linksHeading}</h2>
+    <ul class="links">
+      {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+    </ul>
+  </section>
+</Base>
