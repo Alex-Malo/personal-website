@@ -88,3 +88,19 @@ test('menu panel', () => {
 test('no-js fallback', () => {
   assert.match(pages.en, /<html[^>]*class="no-js"/);
 });
+
+test('early theme script', () => {
+  for (const page of Object.values(pages)) {
+    const head = page.slice(0, page.indexOf('</head>'));
+    const script = head.search(/<script>[^<]*localStorage[^<]*data-theme[^<]*<\/script>|<script>[^<]*data-theme[^<]*localStorage[^<]*<\/script>/);
+    const firstStyle = head.search(/<link rel="stylesheet"|<style/);
+    assert.ok(script >= 0, 'inline theme script in head');
+    assert.ok(firstStyle === -1 || script < firstStyle, 'theme script runs before styles');
+  }
+});
+
+test('toggle button', () => {
+  assert.ok(count(pages.en, 'data-theme-toggle') >= 2);
+  assert.match(pages.en, /data-theme-toggle[^>]*aria-label="Switch to dark mode"|aria-label="Switch to dark mode"[^>]*data-theme-toggle/);
+  assert.ok(pages.ca.includes('Canvia al mode fosc'));
+});

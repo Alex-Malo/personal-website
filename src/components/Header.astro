@@ -2,6 +2,7 @@
 import { pages, text, type Lang } from '../i18n';
 import SocialIcons from './SocialIcons.astro';
 import LangSwitch from './LangSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   lang: Lang;
@@ -29,7 +30,7 @@ const pageLinks = pages.map((p) => ({
       <SocialIcons />
       <span class="nav-sep" aria-hidden="true"></span>
       <LangSwitch lang={lang} path={path} />
-      <button class="icon-button" type="button" data-theme-toggle hidden></button>
+      <ThemeToggle lang={lang} />
     </nav>
     <button class="icon-button menu-button" type="button" aria-controls="site-menu" aria-expanded="false" aria-label={ui.menuOpen}>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h18M3 16h18" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
@@ -50,7 +51,7 @@ const pageLinks = pages.map((p) => ({
   <div class="menu-tools">
     <div class="menu-row">
       <LangSwitch lang={lang} path={path} />
-      <button class="icon-button" type="button" data-theme-toggle hidden></button>
+      <ThemeToggle lang={lang} />
     </div>
     <SocialIcons />
   </div>
