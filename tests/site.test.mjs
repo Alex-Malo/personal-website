@@ -40,3 +40,29 @@ test('defines tokens', () => {
   assert.ok(flat.includes('--paper:#fdf9ef'));
   assert.ok(flat.includes('--link:#2c4a7c'));
 });
+
+test('header nav', () => {
+  assert.match(pages.en, /<a[^>]*href="\/en\/"[^>]*aria-current="page"[^>]*>About<\/a>/);
+  assert.ok(!pages.en.includes('>CV<'));
+  assert.match(pages.ca, /aria-current="page"[^>]*>Sobre mi<\/a>/);
+});
+
+test('social links', () => {
+  const hrefs = [
+    'https://www.linkedin.com/in/alex-malo-3aa7122a7/',
+    'https://github.com/Alex-Malo',
+    'mailto:amaloportabella@gmail.com',
+  ];
+  for (const page of Object.values(pages)) {
+    for (const href of hrefs) assert.ok(count(page, `href="${href}"`) >= 2, href);
+  }
+});
+
+test('language switch keeps path', () => {
+  assert.match(pages.en, /<a[^>]*href="\/ca\/"[^>]*hreflang="ca"/);
+  assert.match(pages.ca, /<a[^>]*href="\/en\/"[^>]*hreflang="en"/);
+});
+
+test('footer', () => {
+  for (const page of Object.values(pages)) assert.ok(page.includes('© 2026 Alex Malo'));
+});

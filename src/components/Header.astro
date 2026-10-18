@@ -1,0 +1,40 @@
+---
+import { languages, pages, text, type Lang } from '../i18n';
+import SocialIcons from './SocialIcons.astro';
+
+interface Props {
+  lang: Lang;
+  // Path after the language prefix of the current page, e.g. "" for About.
+  path: string;
+}
+
+const { lang, path } = Astro.props;
+const ui = text[lang].ui;
+---
+
+<header class="site-header grain">
+  <div class="wrap header-bar">
+    <a class="site-name" href={`/${lang}/`}>Alex Malo</a>
+    <nav class="site-nav" aria-label={ui.mainNav}>
+      <span class="nav-pages">
+        {pages.map((p) => (
+          <a href={`/${lang}/${p.path}`} aria-current={p.path === path ? 'page' : undefined}>{p.label[lang]}</a>
+        ))}
+      </span>
+      <span class="nav-sep" aria-hidden="true"></span>
+      <SocialIcons />
+      <span class="nav-sep" aria-hidden="true"></span>
+      <span class="lang-switch">
+        {(Object.keys(languages) as Lang[]).map((l, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">|</span>}
+            <a href={`/${l}/${path}`} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+              {l.toUpperCase()}
+            </a>
+          </>
+        ))}
+      </span>
+      <button class="icon-button" type="button" data-theme-toggle hidden></button>
+    </nav>
+  </div>
+</header>

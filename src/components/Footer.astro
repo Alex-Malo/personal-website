@@ -1,0 +1,10 @@
+---
+import { links } from '../i18n';
+---
+
+<footer class="site-footer wrap">
+  <span>© 2026 Alex Malo</span>
+  <span class="footer-links">
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+  </span>
+</footer>
