@@ -10,5 +10,7 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "run_worker_first": ["/"]
-  }
+  },
+  // Lets branch builds publish a preview URL (`wrangler preview`). Empty on purpose: everything else is inherited.
+  "previews": {}
 }
