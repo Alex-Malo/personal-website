@@ -378,6 +378,10 @@ h1 {
   }
 }
 
+.not-found {
+  padding-top: 5rem;
+}
+
 /* Footer: every page. */
 .site-footer {
   display: flex;

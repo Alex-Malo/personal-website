@@ -9,18 +9,21 @@ import Footer from '../components/Footer.astro';
 interface Props {
   lang: Lang;
   title: string;
-  description: string;
+  description?: string;
   // Path after the language prefix, e.g. "" for the home page, "blog/" later.
   path?: string;
+  // Bare page (the 404): no header, footer or language links, and not indexed.
+  bare?: boolean;
 }
 
-const { lang, title, description, path = '' } = Astro.props;
+const { lang, title, description, path = '', bare = false } = Astro.props;
 const site = Astro.site!;
 ---
 
 <!doctype html>
 <html lang={lang} class="no-js">
   <head>
+    <meta charset="utf-8" />
     <script is:inline>
       // Runs before anything is drawn: mark JS as available and apply a saved light/dark choice (no flash).
       document.documentElement.classList.replace('no-js', 'js');
@@ -29,22 +32,27 @@ const site = Astro.site!;
         if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
       } catch {}
     </script>
-    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content={description} />
+    {description && <meta name="description" content={description} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={new URL(`/${lang}/${path}`, site)} />
-    {Object.keys(languages).map((l) => (
-      <link rel="alternate" hreflang={l} href={new URL(`/${l}/${path}`, site)} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={new URL(`/en/${path}`, site)} />
+    {bare ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <>
+        <link rel="canonical" href={new URL(`/${lang}/${path}`, site)} />
+        {Object.keys(languages).map((l) => (
+          <link rel="alternate" hreflang={l} href={new URL(`/${l}/${path}`, site)} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={new URL(`/en/${path}`, site)} />
+      </>
+    )}
   </head>
   <body>
-    <Header lang={lang} path={path} />
+    {!bare && <Header lang={lang} path={path} />}
     <main class="wrap">
       <slot />
     </main>
-    <Footer />
+    {!bare && <Footer />}
   </body>
 </html>

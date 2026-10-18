@@ -116,3 +116,12 @@ test('no photo yet', () => {
   assert.ok(!pages.en.includes('about-photo'));
   assert.ok(pages.en.includes('about--no-photo'));
 });
+
+test('404 styled', () => {
+  const page = read('404.html');
+  assert.match(page, /<html[^>]*class="no-js"/);
+  assert.ok(!page.includes('site-header'));
+  assert.ok(page.includes('href="/en/"') && page.includes('href="/ca/"'));
+  const styles = [...inlineStyles(page), ...[...page.matchAll(/href="\/(_astro\/[^"]+\.css)"/g)].map((m) => read(m[1]))].join('\n');
+  assert.ok(styles.includes('Newsreader Variable'));
+});
