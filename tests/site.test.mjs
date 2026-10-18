@@ -112,9 +112,17 @@ test('about content', () => {
   assert.ok(pages.ca.includes('Ara estic fent el pas'));
 });
 
-test('no photo yet', () => {
-  assert.ok(!pages.en.includes('about-photo'));
-  assert.ok(pages.en.includes('about--no-photo'));
+// The photo is optional: whichever state the repo is in, the page must match it.
+const hasPhoto = ['jpg', 'jpeg', 'png', 'webp'].some((ext) => existsSync(new URL(`../src/assets/alex.${ext}`, import.meta.url)));
+
+test('about photo matches the repo', () => {
+  if (hasPhoto) {
+    assert.match(pages.en, /class="about-photo"[\s\S]*?<img[^>]*alt="Alex Malo"/);
+    assert.ok(!pages.en.includes('about--no-photo'));
+  } else {
+    assert.ok(!pages.en.includes('about-photo'));
+    assert.ok(pages.en.includes('about--no-photo'));
+  }
 });
 
 test('404 styled', () => {
@@ -124,4 +132,20 @@ test('404 styled', () => {
   assert.ok(page.includes('href="/en/"') && page.includes('href="/ca/"'));
   const styles = [...inlineStyles(page), ...[...page.matchAll(/href="\/(_astro\/[^"]+\.css)"/g)].map((m) => read(m[1]))].join('\n');
   assert.ok(styles.includes('Newsreader Variable'));
+});
+
+test('theme button hidden without JS', () => {
+  // Minified CSS may merge selectors, e.g. ".no-js .theme-toggle,.theme-sun{display:none}".
+  assert.match(css(), /\.no-js \.theme-toggle[^{]*\{\s*display:\s*none/);
+});
+
+test('sticky header never covers the focused element', () => {
+  assert.match(css().replace(/\s/g, ''), /html\{[^}]*scroll-padding-top:/);
+});
+
+test('CSS and JS use the same phone breakpoint', () => {
+  const flat = css().replace(/\s/g, '');
+  assert.ok(!flat.includes('39.99rem'));
+  // The minifier may rewrite the query as "(width>=40rem)".
+  assert.match(flat, /notalland\((min-width:40rem|width>=40rem)\)/);
 });

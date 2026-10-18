@@ -51,6 +51,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Keeps links reached by keyboard out from under the sticky header. */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -213,7 +215,8 @@ main {
   height: 1.05em;
 }
 
-/* Light/dark toggle: moon in light mode, sun in dark mode. */
+/* Light/dark toggle: moon in light mode, sun in dark mode. Without JS it can't work, so it's hidden (the system setting still applies). */
+.no-js .theme-toggle,
 .theme-sun {
   display: none;
 }
@@ -246,7 +249,8 @@ main {
   font-size: 1.4em;
 }
 
-@media (max-width: 39.99rem) {
+/* Same query as the menu script in Header.astro, so CSS and JS never disagree. */
+@media not all and (min-width: 40rem) {
   .js .site-nav {
     display: none;
   }
