@@ -1,0 +1,21 @@
+---
+import { languages, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  path: string;
+}
+
+const { lang, path } = Astro.props;
+---
+
+<span class="lang-switch">
+  {(Object.keys(languages) as Lang[]).map((l, i) => (
+    <>
+      {i > 0 && <span aria-hidden="true">|</span>}
+      <a href={`/${l}/${path}`} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+        {l.toUpperCase()}
+      </a>
+    </>
+  ))}
+</span>

@@ -1,6 +1,7 @@
 ---
-import { languages, pages, text, type Lang } from '../i18n';
+import { pages, text, type Lang } from '../i18n';
 import SocialIcons from './SocialIcons.astro';
+import LangSwitch from './LangSwitch.astro';
 
 interface Props {
   lang: Lang;
@@ -10,6 +11,11 @@ interface Props {
 
 const { lang, path } = Astro.props;
 const ui = text[lang].ui;
+const pageLinks = pages.map((p) => ({
+  href: `/${lang}/${p.path}`,
+  label: p.label[lang],
+  current: p.path === path ? ('page' as const) : undefined,
+}));
 ---
 
 <header class="site-header grain">
@@ -17,24 +23,71 @@ const ui = text[lang].ui;
     <a class="site-name" href={`/${lang}/`}>Alex Malo</a>
     <nav class="site-nav" aria-label={ui.mainNav}>
       <span class="nav-pages">
-        {pages.map((p) => (
-          <a href={`/${lang}/${p.path}`} aria-current={p.path === path ? 'page' : undefined}>{p.label[lang]}</a>
-        ))}
+        {pageLinks.map((p) => <a href={p.href} aria-current={p.current}>{p.label}</a>)}
       </span>
       <span class="nav-sep" aria-hidden="true"></span>
       <SocialIcons />
       <span class="nav-sep" aria-hidden="true"></span>
-      <span class="lang-switch">
-        {(Object.keys(languages) as Lang[]).map((l, i) => (
-          <>
-            {i > 0 && <span aria-hidden="true">|</span>}
-            <a href={`/${l}/${path}`} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
-              {l.toUpperCase()}
-            </a>
-          </>
-        ))}
-      </span>
+      <LangSwitch lang={lang} path={path} />
       <button class="icon-button" type="button" data-theme-toggle hidden></button>
     </nav>
+    <button class="icon-button menu-button" type="button" aria-controls="site-menu" aria-expanded="false" aria-label={ui.menuOpen}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h18M3 16h18" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
+    </button>
   </div>
 </header>
+
+<div id="site-menu" class="site-menu grain" role="dialog" aria-modal="true" aria-label={ui.mainNav} hidden>
+  <div class="wrap header-bar">
+    <a class="site-name" href={`/${lang}/`}>Alex Malo</a>
+    <button class="icon-button menu-close" type="button" aria-label={ui.menuClose}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>
+    </button>
+  </div>
+  <ul class="menu-pages">
+    {pageLinks.map((p) => <li><a href={p.href} aria-current={p.current}>{p.label}</a></li>)}
+  </ul>
+  <div class="menu-tools">
+    <div class="menu-row">
+      <LangSwitch lang={lang} path={path} />
+      <button class="icon-button" type="button" data-theme-toggle hidden></button>
+    </div>
+    <SocialIcons />
+  </div>
+</div><!-- /site-menu -->
+
+<script>
+  const menu = document.getElementById('site-menu')!;
+  const openButton = document.querySelector<HTMLButtonElement>('.menu-button')!;
+  const closeButton = menu.querySelector<HTMLButtonElement>('.menu-close')!;
+  const wide = window.matchMedia('(min-width: 40rem)');
+  // While the menu covers the screen, keyboard focus stays inside it.
+  const behind = document.querySelectorAll<HTMLElement>('.site-header, main, .site-footer');
+  const setBehind = (inert: boolean) => behind.forEach((el) => (el.inert = inert));
+
+  function open() {
+    setBehind(true);
+    menu.hidden = false;
+    openButton.setAttribute('aria-expanded', 'true');
+    document.documentElement.classList.add('menu-open');
+    closeButton.focus();
+  }
+
+  function close() {
+    if (menu.hidden) return;
+    setBehind(false);
+    menu.hidden = true;
+    openButton.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open');
+    openButton.focus();
+  }
+
+  openButton.addEventListener('click', open);
+  closeButton.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+  wide.addEventListener('change', (e) => {
+    if (e.matches) close();
+  });
+</script>

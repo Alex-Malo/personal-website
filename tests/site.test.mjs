@@ -66,3 +66,25 @@ test('language switch keeps path', () => {
 test('footer', () => {
   for (const page of Object.values(pages)) assert.ok(page.includes('© 2026 Alex Malo'));
 });
+
+const menuPanel = (page) => page.match(/<div[^>]*id="site-menu"[\s\S]*?<!-- \/site-menu -->/)?.[0] ?? '';
+
+test('menu button', () => {
+  assert.match(pages.en, /<button[^>]*aria-controls="site-menu"[^>]*aria-expanded="false"[^>]*aria-label="Open menu"/);
+  assert.match(pages.ca, /<button[^>]*aria-controls="site-menu"[^>]*aria-expanded="false"[^>]*aria-label="Obre el menú"/);
+});
+
+test('menu panel', () => {
+  const panel = menuPanel(pages.en);
+  assert.ok(panel, 'panel with id="site-menu" exists');
+  assert.match(panel, /href="\/en\/"[^>]*>About</);
+  assert.match(panel, /href="\/ca\/"[^>]*hreflang="ca"/);
+  assert.ok(panel.includes('mailto:amaloportabella@gmail.com'));
+  assert.ok(panel.includes('https://github.com/Alex-Malo'));
+  assert.ok(panel.includes('https://www.linkedin.com/in/alex-malo-3aa7122a7/'));
+  assert.ok(menuPanel(pages.ca).includes('aria-label="Tanca el menú"'));
+});
+
+test('no-js fallback', () => {
+  assert.match(pages.en, /<html[^>]*class="no-js"/);
+});

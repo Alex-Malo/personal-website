@@ -213,6 +213,93 @@ main {
   height: 1.05em;
 }
 
+/* Phone menu: name + menu button on small screens, full-screen panel when open. Without JS the nav just wraps. */
+.menu-button,
+.site-menu {
+  display: none;
+}
+
+.menu-button {
+  font-size: 1.4em;
+}
+
+@media (max-width: 39.99rem) {
+  .js .site-nav {
+    display: none;
+  }
+
+  .js .menu-button {
+    display: inline-grid;
+  }
+
+  .site-menu:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .menu-open {
+    overflow: hidden;
+  }
+}
+
+.site-menu .menu-close {
+  font-size: 1.4em;
+}
+
+.menu-pages {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0 var(--gutter);
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+  font-size: 2em;
+}
+
+.menu-pages a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.menu-pages a[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-color: var(--link);
+  text-underline-offset: 6px;
+}
+
+.menu-tools {
+  margin-top: auto;
+  padding: 2rem var(--gutter) 2.5rem;
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 1.1em;
+}
+
+.menu-row .lang-switch a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.menu-row .lang-switch a[aria-current='true'] {
+  color: var(--ink);
+}
+
+.site-menu .social-icons {
+  gap: 1.75rem;
+  font-size: 1.25em;
+}
+
 /* Footer: every page. */
 .site-footer {
   display: flex;
