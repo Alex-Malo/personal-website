@@ -104,3 +104,15 @@ test('toggle button', () => {
   assert.match(pages.en, /data-theme-toggle[^>]*aria-label="Switch to dark mode"|aria-label="Switch to dark mode"[^>]*data-theme-toggle/);
   assert.ok(pages.ca.includes('Canvia al mode fosc'));
 });
+
+test('about content', () => {
+  assert.match(pages.en, /<h1[^>]*>Alex Malo<\/h1>/);
+  assert.match(pages.en, /class="tagline"[^>]*>Data scientist working towards technical AI Safety research\./);
+  assert.ok(pages.en.includes("I'm a data scientist based in Barcelona.") || pages.en.includes('I&#39;m a data scientist based in Barcelona.'));
+  assert.ok(pages.ca.includes('Ara estic fent el pas'));
+});
+
+test('no photo yet', () => {
+  assert.ok(!pages.en.includes('about-photo'));
+  assert.ok(pages.en.includes('about--no-photo'));
+});

@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Base from '../layouts/Base.astro';
 import { text, type Lang } from '../i18n';
 
@@ -8,15 +10,23 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = text[lang];
+
+// The photo is optional: drop src/assets/alex.jpg (or .jpeg/.png/.webp) in and it appears.
+const found = import.meta.glob<{ default: ImageMetadata }>('../assets/alex.{jpg,jpeg,png,webp}', { eager: true });
+const photo = Object.values(found)[0]?.default;
 ---
 
 <Base lang={lang} title={t.title} description={t.description}>
-  <section class="intro">
-    <h1>{t.title}</h1>
-    <p class="tagline">{t.tagline}</p>
-  </section>
-
-  <section>
-    {t.about.map((p) => <p>{p}</p>)}
-  </section>
+  <div class:list={['about', { 'about--no-photo': !photo }]}>
+    {photo && (
+      <div class="about-photo">
+        <Image src={photo} alt="Alex Malo" widths={[460, 920]} sizes="(min-width: 40rem) 230px, 100vw" loading="eager" />
+      </div>
+    )}
+    <div class="about-text">
+      <h1>{t.title}</h1>
+      <p class="tagline">{t.tagline}</p>
+      {t.about.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
 </Base>
