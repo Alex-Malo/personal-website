@@ -20,7 +20,7 @@ const photo = Object.values(found)[0]?.default;
   <div class:list={['about', { 'about--no-photo': !photo }]}>
     {photo && (
       <div class="about-photo">
-        <Image src={photo} alt="Alex Malo" widths={[460, 920]} sizes="(min-width: 40rem) 230px, 100vw" loading="eager" />
+        <Image src={photo} alt="Alex Malo" width={920} widths={[460, 920]} sizes="(min-width: 40rem) 230px, 100vw" loading="eager" />
       </div>
     )}
     <div class="about-text">

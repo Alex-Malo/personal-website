@@ -118,6 +118,11 @@ const hasPhoto = ['jpg', 'jpeg', 'png', 'webp'].some((ext) => existsSync(new URL
 test('about photo matches the repo', () => {
   if (hasPhoto) {
     assert.match(pages.en, /class="about-photo"[\s\S]*?<img[^>]*alt="Alex Malo"/);
+    // Visitors get resized WebP, never the original upload.
+    const img = pages.en.match(/class="about-photo"[\s\S]*?<img[^>]*>/)[0];
+    assert.match(img, /src="\/_astro\/[^"]+\.webp"/);
+    assert.match(img, /srcset="[^"]*460w[^"]*920w/);
+    assert.match(img, /width="920"/, 'fallback src is the 920px version, not the full-size original');
     assert.ok(!pages.en.includes('about--no-photo'));
   } else {
     assert.ok(!pages.en.includes('about-photo'));
