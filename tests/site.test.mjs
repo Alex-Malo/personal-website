@@ -154,3 +154,13 @@ test('CSS and JS use the same phone breakpoint', () => {
   // The minifier may rewrite the query as "(width>=40rem)".
   assert.match(flat, /notalland\((min-width:40rem|width>=40rem)\)/);
 });
+
+test('photo carries no hidden metadata (location, camera)', async () => {
+  if (!hasPhoto) return;
+  const sharp = (await import('sharp')).default;
+  const file = ['jpg', 'jpeg', 'png', 'webp']
+    .map((ext) => new URL(`../src/assets/alex.${ext}`, import.meta.url))
+    .find((u) => existsSync(u));
+  const meta = await sharp(file.pathname.replace(/^\/(\w:)/, '$1')).metadata();
+  assert.ok(!meta.exif && !meta.xmp && !meta.iptc, 'strip metadata before committing: the repo is public');
+});
