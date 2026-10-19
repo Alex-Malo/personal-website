@@ -108,8 +108,13 @@ test('toggle button', () => {
 test('about content', () => {
   assert.match(pages.en, /<h1[^>]*>Alex Malo<\/h1>/);
   assert.match(pages.en, /class="tagline"[^>]*>Data scientist working towards technical AI Safety research\./);
-  assert.ok(pages.en.includes("I'm a data scientist based in Barcelona.") || pages.en.includes('I&#39;m a data scientist based in Barcelona.'));
-  assert.ok(pages.ca.includes('Ara estic fent el pas'));
+  assert.ok(pages.en.includes('Hi! I’m Alex, a data scientist based in Barcelona'));
+  assert.ok(pages.ca.includes('Hola! Soc l’Alex'));
+  // Links in each language point to that language's version where one exists.
+  assert.ok(pages.en.includes('href="https://www.upc.edu/en"'));
+  assert.ok(pages.ca.includes('href="https://www.upc.edu/ca"'));
+  assert.ok(pages.en.includes('href="https://en.wikipedia.org/wiki/Pyrenees"'));
+  assert.ok(pages.ca.includes('href="https://ca.wikipedia.org/wiki/Pirineus"'));
 });
 
 // The photo is optional: whichever state the repo is in, the page must match it.
