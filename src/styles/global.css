@@ -8,7 +8,7 @@
   --link: #2c4a7c;
   --grain-opacity: 0.09;
   --serif: 'Newsreader Variable', Georgia, serif;
-  --content: 55rem;
+  --content: 60rem;
   --gutter: 1.25rem;
 
   /* Grain tiles drawn in code: fine specks + soft blotches. Dark specks on light paper. */
@@ -362,7 +362,7 @@ h1 {
 }
 
 .about-text p {
-  max-width: 62ch;
+  max-width: 67ch;
 }
 
 @media (min-width: 40rem) {
