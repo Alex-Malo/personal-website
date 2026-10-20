@@ -107,7 +107,7 @@ test('toggle button', () => {
 
 test('about content', () => {
   assert.match(pages.en, /<h1[^>]*>Alex Malo<\/h1>/);
-  assert.match(pages.en, /class="tagline"[^>]*>Data scientist working towards technical AI Safety research\./);
+  assert.match(pages.en, /class="tagline"[^>]*>Data scientist, increasingly focused on technical AI Safety research\./);
   assert.ok(pages.en.includes('Hi! I’m Alex, a data scientist based in Barcelona'));
   assert.ok(pages.ca.includes('Hola! Soc l’Alex'));
   // Links in each language point to that language's version where one exists.
