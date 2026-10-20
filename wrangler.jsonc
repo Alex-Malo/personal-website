@@ -11,6 +11,11 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/"]
   },
+  // The site lives only at alexmalo.cat: no copy at personal-website.<account>.workers.dev,
+  // which would sit outside the domain's Cloudflare settings (bot blocking, HTTPS rules).
+  "workers_dev": false,
+  // Branch previews still get their own workers.dev URL.
+  "preview_urls": true,
   // Lets branch builds publish a preview URL (`wrangler preview`). Empty on purpose: everything else is inherited.
   "previews": {}
 }

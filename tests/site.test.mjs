@@ -160,12 +160,33 @@ test('CSS and JS use the same phone breakpoint', () => {
   assert.match(flat, /notalland\((min-width:40rem|width>=40rem)\)/);
 });
 
-test('photo carries no hidden metadata (location, camera)', async () => {
-  if (!hasPhoto) return;
+// Every image in src/ and public/, not just the About photo (blog images later too).
+const images = (dir) =>
+  existsSync(dir)
+    ? readdirSync(dir, { recursive: true })
+        .filter((f) => /\.(jpe?g|png|webp|avif|gif|tiff?)$/i.test(f))
+        .map((f) => new URL(f.replaceAll('\\', '/'), dir))
+    : [];
+
+test('images carry no hidden metadata (location, camera)', async () => {
   const sharp = (await import('sharp')).default;
-  const file = ['jpg', 'jpeg', 'png', 'webp']
-    .map((ext) => new URL(`../src/assets/alex.${ext}`, import.meta.url))
-    .find((u) => existsSync(u));
-  const meta = await sharp(file.pathname.replace(/^\/(\w:)/, '$1')).metadata();
-  assert.ok(!meta.exif && !meta.xmp && !meta.iptc, 'strip metadata before committing: the repo is public');
+  const files = [...images(new URL('../src/', import.meta.url)), ...images(new URL('../public/', import.meta.url))];
+  for (const file of files) {
+    const meta = await sharp(file.pathname.replace(/^\/(\w:)/, '$1')).metadata();
+    assert.ok(!meta.exif && !meta.xmp && !meta.iptc, `strip metadata from ${file.pathname} before committing: the repo is public`);
+  }
+});
+
+test('security headers ship with the site', () => {
+  const headers = read('_headers');
+  for (const name of ['Content-Security-Policy', 'X-Content-Type-Options: nosniff', 'X-Frame-Options: DENY', 'Referrer-Policy']) {
+    assert.ok(headers.includes(name), name);
+  }
+  assert.match(headers, /frame-ancestors 'none'/);
+});
+
+test('no copy of the site on workers.dev', () => {
+  const config = readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8');
+  assert.match(config, /"workers_dev":\s*false/);
+  assert.match(config, /"preview_urls":\s*true/);
 });
