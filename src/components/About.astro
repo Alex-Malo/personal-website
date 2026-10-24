@@ -24,9 +24,13 @@ const photo = Object.values(found)[0]?.default;
       </div>
     )}
     <div class="about-text">
-      <h1>{t.title}</h1>
+      <h1>{t.heading}</h1>
       <p class="tagline">{t.tagline}</p>
       {t.about.map((p) => <p set:html={p} />)}
+      <section class="manifesto" aria-labelledby="manifesto-title">
+        <h2 id="manifesto-title">{t.manifestoTitle}</h2>
+        {t.manifesto.map((p) => <p set:html={p} />)}
+      </section>
     </div>
   </div>
 </Base>

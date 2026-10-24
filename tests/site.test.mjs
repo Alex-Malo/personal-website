@@ -106,7 +106,10 @@ test('toggle button', () => {
 });
 
 test('about content', () => {
-  assert.match(pages.en, /<h1[^>]*>Alex Malo<\/h1>/);
+  // The name is already in the header, so the page heading says what the page is; the tab title keeps the name.
+  assert.match(pages.en, /<h1[^>]*>About Me<\/h1>/);
+  assert.match(pages.ca, /<h1[^>]*>Sobre mi<\/h1>/);
+  assert.match(pages.en, /<title>Alex Malo/);
   assert.match(pages.en, /class="tagline"[^>]*>Data scientist, increasingly focused on technical AI Safety research\./);
   assert.ok(pages.en.includes('Hi! I’m Alex, a data scientist based in Barcelona'));
   assert.ok(pages.ca.includes('Hola! Soc l’Alex'));
@@ -115,6 +118,20 @@ test('about content', () => {
   assert.ok(pages.ca.includes('href="https://www.upc.edu/ca"'));
   assert.ok(pages.en.includes('href="https://en.wikipedia.org/wiki/Pyrenees"'));
   assert.ok(pages.ca.includes('href="https://ca.wikipedia.org/wiki/Pirineus"'));
+});
+
+test('manifesto below the About text', () => {
+  assert.match(pages.en, /<h2[^>]*>Why I care about AI Safety<\/h2>/);
+  assert.match(pages.ca, /<h2[^>]*>Per què m’importa la seguretat de la IA<\/h2>/);
+  for (const page of Object.values(pages)) {
+    const section = page.match(/<section class="manifesto"[\s\S]*?<\/section>/)?.[0] ?? '';
+    assert.ok(section, 'manifesto section exists');
+    // Sources sit on the text's own words: no leftover brackets or doubled full stops.
+    const words = section.replace(/<[^>]+>/g, '');
+    assert.ok(!/\[|\]/.test(words), 'no bracketed sources');
+    assert.ok(!/\.\.|\s\./.test(words), 'no stray full stops');
+    assert.ok(count(section, '<a href=') >= 30, 'sources are linked');
+  }
 });
 
 // The photo is optional: whichever state the repo is in, the page must match it.
