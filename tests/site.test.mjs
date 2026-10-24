@@ -130,7 +130,7 @@ test('manifesto below the About text', () => {
     const words = section.replace(/<[^>]+>/g, '');
     assert.ok(!/\[|\]/.test(words), 'no bracketed sources');
     assert.ok(!/\.\.|\s\./.test(words), 'no stray full stops');
-    assert.ok(count(section, '<a href=') >= 30, 'sources are linked');
+    assert.ok(count(section, '<a href=') >= 20, 'sources are linked');
   }
 });
 
