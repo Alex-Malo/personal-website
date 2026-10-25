@@ -205,6 +205,48 @@ test('security headers ship with the site', () => {
   assert.match(headers['Content-Security-Policy'], /frame-ancestors 'none'/);
 });
 
+test('every page reserves text and data mining (EU opt-out from AI training)', () => {
+  const all = vercel.headers.find((rule) => rule.source === '/(.*)');
+  assert.ok(all.headers.some(({ key, value }) => key === 'tdm-reservation' && value === '1'));
+});
+
+// robots.txt as { agent (lowercase): [rules] }; agents listed together share the rules below them.
+const robots = () => {
+  const groups = {};
+  let agents = [];
+  let lastWasAgent = false;
+  for (const line of read('robots.txt').split('\n')) {
+    const [field, ...rest] = line.replace(/#.*/, '').split(':');
+    const value = rest.join(':').trim();
+    if (!value) continue;
+    if (field.trim().toLowerCase() === 'user-agent') {
+      agents = lastWasAgent ? [...agents, value.toLowerCase()] : [value.toLowerCase()];
+      lastWasAgent = true;
+    } else {
+      for (const agent of agents) (groups[agent] ??= []).push(`${field.trim().toLowerCase()}: ${value}`);
+      lastWasAgent = false;
+    }
+  }
+  return groups;
+};
+
+test('robots.txt keeps AI training crawlers out', () => {
+  const groups = robots();
+  for (const bot of ['gptbot', 'claudebot', 'ccbot', 'google-extended', 'applebot-extended', 'meta-externalagent', 'bytespider']) {
+    assert.deepEqual(groups[bot], ['disallow: /'], bot);
+  }
+  assert.ok(groups['*'].includes('content-signal: search=yes, ai-input=yes, ai-train=no'));
+});
+
+test('robots.txt lets search engines, AI search and AI assistants in', () => {
+  const groups = robots();
+  assert.ok(groups['*'].includes('allow: /') && !groups['*'].includes('disallow: /'));
+  // Each of these must fall back to the "*" group, never a group of its own.
+  for (const bot of ['googlebot', 'bingbot', 'oai-searchbot', 'chatgpt-user', 'claude-searchbot', 'claude-user', 'perplexitybot', 'perplexity-user']) {
+    assert.equal(groups[bot], undefined, bot);
+  }
+});
+
 test('the language redirect runs only for "/"', () => {
   assert.deepEqual(vercel.proxy.matcher, ['/']);
 });
