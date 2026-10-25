@@ -1,27 +1,20 @@
 // Sends visitors of the bare domain to /ca/ or /en/ based on their browser language.
-// Every other request is served straight from the static files by Cloudflare.
+// Vercel runs this only for "/" (see "proxy" in vercel.json); every other request is a static file.
 
 const SUPPORTED = ['en', 'ca'];
 const FALLBACK = 'en';
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    if (url.pathname === '/') {
-      const lang = pickLanguage(request.headers.get('Accept-Language'));
-      return new Response(null, {
-        status: 302,
-        headers: { Location: `/${lang}/${url.search}`, Vary: 'Accept-Language' },
-      });
-    }
-
-    return env.ASSETS.fetch(request);
-  },
-};
+export default function proxy(request) {
+  const url = new URL(request.url);
+  const lang = pickLanguage(request.headers.get('Accept-Language'));
+  return new Response(null, {
+    status: 302,
+    headers: { Location: `/${lang}/${url.search}`, Vary: 'Accept-Language' },
+  });
+}
 
 // "ca-ES,ca;q=0.9,en;q=0.8" -> the supported language with the highest weight, else the fallback.
-function pickLanguage(header) {
+export function pickLanguage(header) {
   if (!header) return FALLBACK;
 
   const ranked = header

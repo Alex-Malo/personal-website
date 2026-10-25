@@ -194,16 +194,29 @@ test('images carry no hidden metadata (location, camera)', async () => {
   }
 });
 
+const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+
 test('security headers ship with the site', () => {
-  const headers = read('_headers');
-  for (const name of ['Content-Security-Policy', 'X-Content-Type-Options: nosniff', 'X-Frame-Options: DENY', 'Referrer-Policy']) {
-    assert.ok(headers.includes(name), name);
-  }
-  assert.match(headers, /frame-ancestors 'none'/);
+  const all = vercel.headers.find((rule) => rule.source === '/(.*)');
+  const headers = Object.fromEntries(all.headers.map(({ key, value }) => [key, value]));
+  assert.equal(headers['X-Content-Type-Options'], 'nosniff');
+  assert.equal(headers['X-Frame-Options'], 'DENY');
+  assert.ok(headers['Referrer-Policy']);
+  assert.match(headers['Content-Security-Policy'], /frame-ancestors 'none'/);
 });
 
-test('no copy of the site on workers.dev', () => {
-  const config = readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8');
-  assert.match(config, /"workers_dev":\s*false/);
-  assert.match(config, /"preview_urls":\s*true/);
+test('the language redirect runs only for "/"', () => {
+  assert.deepEqual(vercel.proxy.matcher, ['/']);
+});
+
+test('"/" redirects by browser language', async () => {
+  const { default: proxy } = await import('../proxy.js');
+  const go = (lang, path = '/') =>
+    proxy(new Request(`https://alexmalo.cat${path}`, { headers: lang ? { 'Accept-Language': lang } : {} })).headers.get('Location');
+  assert.equal(go('ca-ES,ca;q=0.9,en;q=0.8'), '/ca/');
+  assert.equal(go('en-GB,en;q=0.9,ca;q=0.5'), '/en/');
+  assert.equal(go('es-ES,es;q=0.9,ca;q=0.8'), '/ca/');
+  assert.equal(go('es-ES,es;q=0.9'), '/en/');
+  assert.equal(go(null), '/en/');
+  assert.equal(go('ca', '/?ref=cv'), '/ca/?ref=cv');
 });

@@ -5,9 +5,8 @@ dist/
 # dependencies
 node_modules/
 
-# Cloudflare local state
-.wrangler/
-.dev.vars
+# Vercel local state
+.vercel/
 
 # logs and env
 npm-debug.log*
